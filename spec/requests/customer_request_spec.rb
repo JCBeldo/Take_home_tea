@@ -52,16 +52,29 @@ describe 'Customer API' do
     post '/api/v1/customers', headers: headerz, params: JSON.generate(customer: customer_params)
 
     new_customer = Customer.last
-    
+
     expect(response).to be_successful
     # expect(response.status).to eq(201)
 
     expect(new_customer.first_name).to eq(customer_params[:first_name])
     expect(new_customer.first_name).to be_a(String)
     expect(new_customer.first_name).to eq('John')
-    
+
     expect(new_customer.last_name).to eq(customer_params[:last_name])
     expect(new_customer.email).to eq(customer_params[:email])
     expect(new_customer.address).to eq(customer_params[:address])
+  end
+
+  it 'shows a single customer and their subscriptions' do
+    customer1 = create(:customer)
+    id = customer1.id
+
+    customer1.subscriptions.create(title: 'Green Tea', price: 15, status: 0, frequency: 'monthly')
+    customer1.subscriptions.create(title: 'Oolong Tea', price: 30, status: 1, frequency: 'monthly')
+
+    get "/api/v1/customers/#{id}/subscriptions"
+
+    expect(response).to be_successful
+    expect(response.status).to eq(200)
   end
 end

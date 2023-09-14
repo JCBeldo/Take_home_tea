@@ -42,9 +42,9 @@ describe 'Subscription API' do
 
     subscription_params = {
       title: "Pu'erh Tea",
-      description: "Aged tea from China",
-      temperature: 212,
-      brew_time: 2
+      price: 15,
+      status: 1,
+      frequency: "monthly"
     }
 
     headerz = { 'CONTENT_TYPE' => 'application/json' }
@@ -61,5 +61,11 @@ describe 'Subscription API' do
 
     expect(new_subscription.price).to eq(subscription_params[:price])
     expect(new_subscription.price).to be_a(Integer)
+
+    expect(new_subscription.status).to be_a(String)
+    expect(new_subscription.status).to eq('cancelled')
+
+    expect(new_subscription.frequency).to eq(subscription_params[:frequency])
+    expect(new_subscription.frequency).to be_a(String)
   end
 end
