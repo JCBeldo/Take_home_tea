@@ -51,5 +51,17 @@ describe 'Customer API' do
 
     post '/api/v1/customers', headers: headerz, params: JSON.generate(customer: customer_params)
 
+    new_customer = Customer.last
+    
+    expect(response).to be_successful
+    # expect(response.status).to eq(201)
+
+    expect(new_customer.first_name).to eq(customer_params[:first_name])
+    expect(new_customer.first_name).to be_a(String)
+    expect(new_customer.first_name).to eq('John')
+    
+    expect(new_customer.last_name).to eq(customer_params[:last_name])
+    expect(new_customer.email).to eq(customer_params[:email])
+    expect(new_customer.address).to eq(customer_params[:address])
   end
 end
