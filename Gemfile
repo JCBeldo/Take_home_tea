@@ -61,5 +61,5 @@ group :test do
 end
 
 gem 'faraday'
-gem 'figaro'
+# gem 'figaro'
 gem 'jsonapi-serializer'
