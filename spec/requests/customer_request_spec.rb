@@ -37,4 +37,19 @@ describe 'Customer API' do
       expect(customer[:attributes][:address]).to be_a(String)
     end
   end
+
+  it 'can create a new customer' do
+
+    customer_params = {
+      first_name: 'John',
+      last_name: 'Doe',
+      email: 'John.Doe@gmail.com',
+      address: '1234 1st St. Denver, CO 80202'
+    }
+
+    headerz = { 'CONTENT_TYPE' => 'application/json' }
+
+    post '/api/v1/customers', headers: headerz, params: JSON.generate(customer: customer_params)
+
+  end
 end
