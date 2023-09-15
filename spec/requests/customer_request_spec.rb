@@ -54,7 +54,7 @@ describe 'Customer API' do
     new_customer = Customer.last
 
     expect(response).to be_successful
-    # expect(response.status).to eq(201)
+    expect(response.status).to eq(201)
 
     expect(new_customer.first_name).to eq(customer_params[:first_name])
     expect(new_customer.first_name).to be_a(String)
@@ -69,12 +69,10 @@ describe 'Customer API' do
     customer1 = create(:customer)
     id = customer1.id
     subs = create_list(:subscription, 2)
-    # require 'pry'; binding.pry
+   
     cs1 = CustomerSubscription.create!(customer_id: id, subscription_id: subs.first.id)
     cs2 = CustomerSubscription.create!(customer_id: id, subscription_id: subs[1].id)
-    # Subscription.create(title: 'Green Tea', price: 15, status: 0, frequency: 'monthly')
-    # Subscription.create(title: 'Oolong Tea', price: 30, status: 1, frequency: 'monthly')
-    # require 'pry'; binding.pry
+    
     get "/api/v1/customers/#{id}/subscriptions"
 
     expect(response).to be_successful
@@ -107,5 +105,23 @@ describe 'Customer API' do
       expect(subscription[:attributes]).to have_key(:frequency)
       expect(subscription[:attributes][:frequency]).to be_a(String)
     end
+  end
+
+  it 'shows the sad path for created a single customer' do
+    customer_params = {
+      first_name: 'John',
+      last_name: 'Doe',
+      email: '',
+      address: '1234 1st St. Denver, CO 80202'
+    }
+
+    headerz = { 'CONTENT_TYPE' => 'application/json' }
+
+    post '/api/v1/customers', headers: headerz, params: JSON.generate(customer: customer_params)
+
+    expect(Customer.count).to eq(0)
+
+    expect(response).to_not be_successful
+    expect(response.status).to eq(400)
   end
 end
