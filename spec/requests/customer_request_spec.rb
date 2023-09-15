@@ -68,13 +68,44 @@ describe 'Customer API' do
   it 'shows a single customer and their subscriptions' do
     customer1 = create(:customer)
     id = customer1.id
-
-    customer1.subscriptions.create(title: 'Green Tea', price: 15, status: 0, frequency: 'monthly')
-    customer1.subscriptions.create(title: 'Oolong Tea', price: 30, status: 1, frequency: 'monthly')
-
+    subs = create_list(:subscription, 2)
+    # require 'pry'; binding.pry
+    cs1 = CustomerSubscription.create!(customer_id: id, subscription_id: subs.first.id)
+    cs2 = CustomerSubscription.create!(customer_id: id, subscription_id: subs[1].id)
+    # Subscription.create(title: 'Green Tea', price: 15, status: 0, frequency: 'monthly')
+    # Subscription.create(title: 'Oolong Tea', price: 30, status: 1, frequency: 'monthly')
+    # require 'pry'; binding.pry
     get "/api/v1/customers/#{id}/subscriptions"
 
     expect(response).to be_successful
-    expect(response.status).to eq(200)
+    expect(response.status).to eq(201)
+
+    customer_sub_json = JSON.parse(response.body, symbolize_names: true)
+   
+    customer_subs = customer_sub_json[:data]
+
+    customer_subs.each do |subscription|
+      expect(subscription).to have_key(:id)
+      expect(subscription[:id]).to be_an(String)
+
+      expect(subscription).to have_key(:type)
+      expect(subscription[:type]).to eq('subscription')
+      expect(subscription[:type]).to be_a(String)
+
+      expect(subscription).to have_key(:attributes)
+      expect(subscription[:attributes]).to be_a(Hash)
+
+      expect(subscription[:attributes]).to have_key(:title)
+      expect(subscription[:attributes][:title]).to be_a(String)
+
+      expect(subscription[:attributes]).to have_key(:price)
+      expect(subscription[:attributes][:price]).to be_a(Integer)
+
+      expect(subscription[:attributes]).to have_key(:status)
+      expect(subscription[:attributes][:status]).to be_a(String)  
+
+      expect(subscription[:attributes]).to have_key(:frequency)
+      expect(subscription[:attributes][:frequency]).to be_a(String)
+    end
   end
 end
