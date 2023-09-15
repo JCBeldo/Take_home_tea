@@ -5,12 +5,10 @@ class Api::V1::Customers::SubscriptionsController < ApplicationController
   end
 
   def create
-    # require 'pry'; binding.pry
     customer = Customer.find(params[:id])
     subscription = Subscription.new(subscription_params)
     if subscription.save
       cr_sub = CustomerSubscription.create(customer_id: customer.id, subscription_id: subscription.id)
-      # require 'pry'; binding.pry
       render json: SubscriptionSerializer.new(cr_sub.subscription), status: 201
     else
       render json: { error: subscription.errors.full_messages.to_sentence }, status: 400
@@ -18,12 +16,14 @@ class Api::V1::Customers::SubscriptionsController < ApplicationController
   end
 
   def update
-    
+    customer = Customer.find(params[:id])
+    subscription = customer.subscriptions.find_by(id: params[:subscription][:id])
+    subscription.update(subscription_params)
   end
 
   private
 
   def subscription_params
-    params.require(:subscription).permit(:title, :price, :status, :frequency)
+    params.require(:subscription).permit(:id, :title, :price, :status, :frequency)
   end
 end
